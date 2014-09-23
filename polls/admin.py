@@ -1,14 +1,20 @@
 from django.contrib import admin
 from polls.models import *
 
-class QuestionAdminA(admin.ModelAdmin):
-    fields = ['pub_date', 'question_text']
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 1
 
-class QuestionAdminB(admin.ModelAdmin):
+
+class QuestionAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['question_text']}),
-        ('Date information', {'fields': ['pub_date'], 'classes': ['collapse'] }),
-        ('Choices',          {'fields': ['choice_set']})
+        ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     ]
-admin.site.register(Question, QuestionAdminB)
-admin.site.register(Choice)
+    inlines = [ChoiceInline]
+    # list_display = ('question_text', 'pub_date')
+    list_display = ('question_text', 'pub_date', 'was_published_recently')
+    list_filter = ['pub_date']
+    search_fields = ['question_text']
+
+admin.site.register(Question, QuestionAdmin)
